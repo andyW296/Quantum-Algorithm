@@ -1,0 +1,61 @@
+namespace DJ_Algorithm {
+
+    open Microsoft.Quantum.Canon;
+    open Microsoft.Quantum.Intrinsic;
+    open Microsoft.Quantum.Arrays;
+    open Microsoft.Quantum.Diagnostics;
+    open Microsoft.Quantum.Measurement;
+    open Microsoft.Quantum.Math;
+    open Microsoft.Quantum.Convert;
+
+    @EntryPoint()
+    operation DJ_Algorithm() : Unit {
+        mutable isConstateFunction = Zero;
+        use (x, y) = (Qubit[10], Qubit());
+
+        ApplyToEach(H, x);
+        X(y);
+        H(y);
+
+        Uf(x,y);
+
+        ApplyToEach(H, x);
+
+        for i in 0 .. 9{
+         if(M(x[i]) != Zero){
+             set isConstateFunction = One;
+         }
+        }
+
+        if(isConstateFunction == Zero){
+            Message("The function are constant!");
+        }else{
+            Message("The function are balance!");
+        }
+        Reset(y);
+    }
+
+    operation Uf(x : Qubit[], y : Qubit) : Unit{
+        use a = Qubit();
+        mutable temp = Zero;
+        
+        H(a);
+        set temp = M(a);
+        
+        if(temp == Zero){
+            Uf1(x, y);
+        }else{
+            Uf2(x,y);
+            }
+        }
+
+    operation Uf1(x : Qubit[], y : Qubit) : Unit{
+        Message("f(x) = 1");
+        X(y);
+    }
+
+    operation Uf2(x : Qubit[], y : Qubit) : Unit{
+        Message("f(x) = 1 if x has odd of 1s, and 0 otherwise");
+        ApplyToEachA(CNOT(_, y), x);
+    }
+}
